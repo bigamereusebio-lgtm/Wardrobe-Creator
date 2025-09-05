@@ -59,25 +59,31 @@ const LS_KEYS = {
   fits: "outfit.fits.v1",
 };
 
-const loadLS = (key, fallback) => {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
-};
+import { useState, useEffect } from "react";
+import { saveInventory, loadInventory } from "./storage";
 
-const saveLS = (key, value) => {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch {}
-};
+function OutfitBuilderApp() {
+  const [inventory, setInventory] = useState([]);
 
-const uuid = () =>
-  typeof crypto !== "undefined" && crypto?.randomUUID
-    ? crypto.randomUUID()
-    : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+  // Load from IndexedDB at startup
+  useEffect(() => {
+    loadInventory().then(setInventory);
+  }, []);
+
+  // Save whenever inventory changes
+  useEffect(() => {
+    saveInventory(inventory);
+  }, [inventory]);
+
+  return (
+    <div>
+      <h1>My Closet</h1>
+      {/* your existing UI */}
+    </div>
+  );
+}
+
+export default OutfitBuilderApp;
 
 // =============================
 // UI PRIMITIVES
